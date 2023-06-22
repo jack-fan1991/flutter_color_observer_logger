@@ -135,7 +135,7 @@ class LoggerHelperFormatter {
     var min = _twoDigits(now.minute);
     var sec = _twoDigits(now.second);
     var ms = _threeDigits(now.millisecond);
-    var timeSinceStart = now.difference(_startTime).toString();
+    // var timeSinceStart = now.difference(_startTime).toString();
     // return '$h:$min:$sec.$ms (+$timeSinceStart)';
     return '$formattedDate $h:$min:$sec.$ms';
   }

@@ -41,7 +41,7 @@ class AnsiColor {
 
   /// Write the [msg.toString()] with the pen's current settings and then
   /// reset all attributes.
-  String write(Object msg) => '${this}$msg$up';
+  String write(Object msg) => '$this$msg$up';
 
   String call(String msg) {
     if (color) {
