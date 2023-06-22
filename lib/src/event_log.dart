@@ -77,6 +77,6 @@ class ErrorLog extends EventLog {
   static String _createMessage(BlocBase bloc, StackTrace? stackTrace) {
     final firstStack =
         stackTrace == null ? "" : stackTrace.toString().split('\n').first;
-    return '🚨 [BLOC] Error in ${bloc.runtimeType}\n $firstStack';
+    return 'Error in ${bloc.runtimeType}\n $firstStack';
   }
 }

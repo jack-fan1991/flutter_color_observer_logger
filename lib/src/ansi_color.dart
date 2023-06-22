@@ -1,4 +1,4 @@
-import '../color_observer_logger.dart';
+import 'package:color_observer_logger/src/color_observer_logger.dart';
 
 class AnsiColor {
   /// ANSI Control Sequence Introducer, signals the terminal for new settings.

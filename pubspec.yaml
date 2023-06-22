@@ -1,6 +1,6 @@
 name: color_observer_logger
 description: 'color_observer_logger'
-version: 0.0.1
+version: 0.0.4
 homepage: https://pub.dev/packages/color_observer_logger
 repository: https://github.com/jack-fan1991/flutter_color_observer_logger
 issue_tracker: https://github.com/jack-fan1991/flutter_color_observer_logger/issues

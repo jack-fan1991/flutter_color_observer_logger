@@ -37,6 +37,9 @@ example/linux
 example/macos
 example/web
 example/windows
+example/windows
+example/.dart_tool
+
 /linux
 /macos
 /web

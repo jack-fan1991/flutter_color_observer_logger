@@ -66,7 +66,10 @@ mixin HideWhenBlocObserverAttachMixin {
 class ColorBlocObserver extends BlocObserver
     with HideWhenBlocObserverAttachMixin {
   /// Use with [HideWhenBlocObserverAttachMixin] on Bloc to skip when bloc observer attach
-  ColorBlocObserver();
+
+  ColorBlocObserver({bool logStack = true}) {
+    ColorObserverLogger.logStack = logStack;
+  }
 
   @override
   void onEvent(Bloc bloc, Object? event) {
