@@ -1,40 +1,33 @@
-name: Release
+# .github/workflows/publish.yml
+name: Publish to pub.dev
 
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+    - 'v[0-9]+.[0-9]+.[0-9]+*' # tag pattern on pub.dev: 'v'
 
+env:
+  flutter_version: "3.10.5"
+# Publish using custom workflow
 jobs:
-  release:
+  publish:
     permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+      id-token: write # Required for authentication using OIDC
     runs-on: ubuntu-latest
     steps:
-      - name: Get semantic version
-        id: semver
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
-
       - uses: actions/checkout@v3
+      - name: Clone Flutter repository with stable channel
+        uses: subosito/flutter-action@v2
         with:
-          ref: v$
-
-      # For Flutter package
-      - uses: dart-lang/setup-dart@v1
-      - uses: subosito/flutter-action@v2.10.0
-        with:
-          flutter-version: '3.10.5'
+          flutter-version: ${{ env.flutter_version }}
+          channel: "stable"
+          cache-key: ${{ env.flutter_version }}
+      - name: flutter doctor 
+        run: flutter doctor -v
+        
       - name: Install dependencies
-        run: flutter pub get
-
+        run: dart pub get
+      # Here you can insert custom steps you need
+      # - run: dart tool/generate-code.dart
       - name: Publish
-        run: flutter pub publish --force
-
-      # For Dart package
-      # - uses: dart-lang/setup-dart@v1
-      # - name: Install dependencies
-      #   run: dart pub get
-      # - name: Publish
-      #   run: dart pub publish --force
+        run: dart pub publish --force
