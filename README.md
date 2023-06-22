@@ -1,9 +1,9 @@
 ## Color logger 
 
-* sample =>example/lib/main.dart
+More examples you can get [here](https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/example/lib/main.dart)
+
 * Setup
 ``` dart
-  Logger.root.onRecord.listen(ColorLogger.output);
   // show stack trace
   // if use 'flutter build apk --obfuscate  ' trace will failed, 
   // set ColorObserverLogger.logStack = false ;
@@ -17,19 +17,33 @@
 ```
 
 * bloc 
+
     * untrack
-        ![image](assets/bloc.png )
+        <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/bloc.png?raw=true">
+        </a>
     * track
-         ![image](assets/bloc_track.png )
+        <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/bloc_track.png?raw=true">
+        </a>
+        
     * error
-        ![image](assets/bloc_error.png )
+         <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/bloc_error.png?raw=true">
+        </a>
     * error track
-        ![image](assets/bloc_error_track.png )
+        <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/bloc_error_track.png?raw=true">
+        </a>
 
 * cubit
     * untrack
-        ![image](assets/cubit.png )
+         <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/cubit.png?raw=true">
+        </a>
     * track
-        ![image](assets/cubit_track.png )
+         <a  align="center">
+        <img src="https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/assets/cubit_track.png?raw=true">
+        </a>
 
   

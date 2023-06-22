@@ -1,13 +1,10 @@
-import 'package:color_logger/color_logger.dart';
 import 'package:example/bloc/test_bloc.dart';
 import 'package:example/bloc/test_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
 import 'package:color_observer_logger/color_observer_logger.dart';
 
 void main() {
-  Logger.root.onRecord.listen(ColorLogger.output);
   ColorObserverLogger.logStack = false;
   Bloc.observer = ColorBlocObserver();
   runApp(const MyApp());

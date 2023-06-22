@@ -49,15 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.1"
-  color_logger:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: "1e8e29c039a4655d94a1d73001151e44962861e3"
-      url: "git@github.com:jack-fan1991/flutter_color_logger.git"
-    source: git
-    version: "0.0.1"
   color_observer_logger:
     dependency: "direct main"
     description:

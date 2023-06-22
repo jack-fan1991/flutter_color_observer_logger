@@ -38,12 +38,6 @@
       "languageVersion": "2.18"
     },
     {
-      "name": "color_logger",
-      "rootUri": "file:///Users/jack/.pub-cache/git/flutter_color_logger-1e8e29c039a4655d94a1d73001151e44962861e3/",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
       "name": "color_observer_logger",
       "rootUri": "../../",
       "packageUri": "lib/",
@@ -194,7 +188,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2023-06-22T06:12:11.142833Z",
+  "generated": "2023-06-22T06:59:45.300171Z",
   "generator": "pub",
   "generatorVersion": "3.0.5"
 }
