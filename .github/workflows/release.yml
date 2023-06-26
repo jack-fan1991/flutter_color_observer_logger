@@ -61,7 +61,7 @@ jobs:
       - name: Commit version change
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'chore: Update version to ${{ steps.set-tag-version.outputs.tag-version }}'
+          commit_message: 'CI Action: Update version to ${{ steps.set-tag-version.outputs.tag-version }}'
           file_pattern: pubspec.yaml
           branch: main
             
