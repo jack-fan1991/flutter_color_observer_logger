@@ -3,9 +3,9 @@ import 'package:example/bloc/test_bloc.dart';
 import 'package:example/bloc/test_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 void main() {
-  Bloc.observer = ColorBlocObserver(logStack: false);
   runApp(const MyApp());
 }
 
@@ -14,6 +14,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Logger.root.level = Level.ALL;
+    Bloc.observer = ColorBlocObserver(
+      stackTracking: true,
+    );
     final testLoginBloc = TestLoginBloc();
     final testCubit = TestCubit(0);
     return MultiBlocProvider(

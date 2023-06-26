@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:color_observer_logger/color_observer_logger.dart';
 import 'package:color_observer_logger/src/event_log.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,20 +9,7 @@ import 'package:logging/logging.dart';
 
 import 'ansi_color.dart';
 
-final levelColors = {
-  Level.FINE: AnsiColor.fg(40),
-  Level.SEVERE: AnsiColor.fg(196),
-};
-
-final Map<Level, int> methodCounts = {
-  Level.SEVERE: 8,
-  Level.FINE: 1,
-};
-
-final levelEmojis = {
-  Level.FINE: '💡 ',
-  Level.SEVERE: '⛔ ',
-};
+final loggerHelperFormatter = LoggerHelperFormatter();
 
 class ColorObserverLogger {
   static const verticalLine = ' │ ';
@@ -30,8 +18,9 @@ class ColorObserverLogger {
   static const tail =
       '└──────────────────────────────────────────────────────────────────────────────────────────────────────────────';
   static bool _logStack = true;
-  static bool get logStack => _logStack;
-  static set logStack(bool value) {
+  static bool get stackTracking => _logStack;
+  static Filter filter = Filter.allPass();
+  static set stackTracking(bool value) {
     if (kIsWeb && value == true) {
       developer.log(AnsiColor.fg(196)(
           "ColorObserverLogger.logStack tracking is not supported on web platform"));
@@ -40,11 +29,49 @@ class ColorObserverLogger {
     _logStack = value;
   }
 
+  static final defaultLevelColors = {
+    Level.FINE: AnsiColor.fg(40),
+    Level.SEVERE: AnsiColor.fg(196),
+  };
+
+  static final Map<Level, int> defaultMethodCounts = {
+    Level.SEVERE: 8,
+    Level.FINE: 1,
+  };
+
+  static void updateMethodCounts(Map<Level, int>? methodCounts) {
+    if (methodCounts == null) return;
+    for (final element in methodCounts.entries) {
+      defaultMethodCounts[element.key] = element.value;
+    }
+  }
+
+  static void updateLevelColors(Map<Level, AnsiColor>? levelColors) {
+    if (levelColors == null) return;
+    for (final element in levelColors.entries) {
+      defaultLevelColors[element.key] = element.value;
+    }
+  }
+
+  static bool canLog(EventLog eventLog) {
+    if (eventLog.level < Logger.root.level) return false;
+    if (filter.name.isEmpty) {
+      return true;
+    } else if (filter is ShowWhenFilter) {
+      return filter.name.any((element) => (eventLog.title.contains(element)));
+    } else if (filter is HideWhenFilter) {
+      return !filter.name.any((element) => (eventLog.title.contains(element)));
+    } else {
+      return true;
+    }
+  }
+
   static output(EventLog eventLog) {
+    if (!canLog(eventLog)) return;
     // methodCount = methodCounts[level];
-    AnsiColor color = levelColors[eventLog.level] ?? AnsiColor.none();
+    AnsiColor color = defaultLevelColors[eventLog.level] ?? AnsiColor.none();
     if (eventLog.message.isEmpty) return;
-    List<String> msg = AnsiColor.loggerHelperFormatter.format(eventLog);
+    List<String> msg = loggerHelperFormatter.format(eventLog);
     if (eventLog.level >= Level.ALL) {
       msg = [head, ...msg, tail];
     }
@@ -143,10 +170,12 @@ class LoggerHelperFormatter {
   List<String> format(EventLog eventLog, {int? methodCount}) {
     // methodCount = methodCounts[level];
     String? stackTraceStr;
-    if (ColorObserverLogger.logStack) {
+    if (ColorObserverLogger.stackTracking) {
       stackTraceStr = formatStackTrace(
         StackTrace.current,
-        methodCount ?? methodCounts[eventLog.level] ?? 3,
+        methodCount ??
+            ColorObserverLogger.defaultMethodCounts[eventLog.level] ??
+            3,
       );
     }
 

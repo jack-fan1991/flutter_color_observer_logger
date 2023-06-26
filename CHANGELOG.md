@@ -1,4 +1,6 @@
+## 0.0.6
+- Add LoggerFilter
 ## 0.0.4
 
-- stable version
-- ez setup
+- Stable version
+- EZ setup

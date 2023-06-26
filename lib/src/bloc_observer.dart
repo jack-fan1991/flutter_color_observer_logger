@@ -1,6 +1,9 @@
+import 'package:color_observer_logger/src/ansi_color.dart';
 import 'package:color_observer_logger/src/color_observer_logger.dart';
 import 'package:color_observer_logger/src/event_log.dart';
 import 'package:bloc/bloc.dart';
+import 'package:color_observer_logger/src/logger_filter.dart';
+import 'package:logging/logging.dart';
 
 BlocTrackingUtils _blocTrackingUtils = BlocTrackingUtils();
 
@@ -14,7 +17,7 @@ class BlocTrackingUtils {
   final RegExp regex = RegExp(r'\([^\)]+\)');
 
   String trackCubit(BlocBase bloc, String event) {
-    if (ColorObserverLogger.logStack == false) return "";
+    if (ColorObserverLogger.stackTracking == false) return "";
 
     final cubit = bloc.runtimeType.toString();
     final stack = StackTrace.current.toString().split('\n');
@@ -40,7 +43,7 @@ class BlocTrackingUtils {
 
   /// get event add ref position
   String trackBloc(BlocBase bloc, String event) {
-    if (ColorObserverLogger.logStack == false) return "";
+    if (ColorObserverLogger.stackTracking == false) return "";
     final stack = StackTrace.current.toString().split('\n');
     final target = stack.indexOf(
             stack.firstWhere((element) => element.contains('Bloc.add ('))) +
@@ -66,9 +69,31 @@ mixin HideWhenBlocObserverAttachMixin {
 class ColorBlocObserver extends BlocObserver
     with HideWhenBlocObserverAttachMixin {
   /// Use with [HideWhenBlocObserverAttachMixin] on Bloc to skip when bloc observer attach
-
-  ColorBlocObserver({bool logStack = true}) {
-    ColorObserverLogger.logStack = logStack;
+  ///
+  ///```dart
+  ///   AnsiColor.showColor();
+  ///   final Map<Level, AnsiColor> levelColors = {
+  ///     Level.FINE: AnsiColor.fg(75),
+  ///     Level.SEVERE: AnsiColor.fg(196),
+  ///    };
+  ///
+  ///   final Map<Level, int> methodCounts = {
+  ///     Level.SEVERE: 8,
+  ///     Level.FINE: 2,
+  ///    };
+  ///
+  ///
+  ///```
+  ColorBlocObserver({
+    bool stackTracking = true,
+    Map<Level, AnsiColor>? levelColors,
+    Map<Level, int>? methodCounts,
+    Filter? filter,
+  }) {
+    ColorObserverLogger.stackTracking = stackTracking;
+    ColorObserverLogger.updateLevelColors(levelColors);
+    ColorObserverLogger.updateMethodCounts(methodCounts);
+    ColorObserverLogger.filter = filter ?? Filter.allPass();
   }
 
   @override
@@ -107,7 +132,7 @@ class ColorBlocObserver extends BlocObserver
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
     final stateLog =
-        ErrorLog(bloc, ColorObserverLogger.logStack ? stackTrace : null);
+        ErrorLog(bloc, ColorObserverLogger.stackTracking ? stackTrace : null);
 
     ColorObserverLogger.output(stateLog);
 
