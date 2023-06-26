@@ -1,6 +1,6 @@
 name: color_observer_logger
 description: 'A color logger for for observer, which can help you to debug your blocs.'
-version: 0.0.5
+version: 0.0.6
 homepage: https://pub.dev/packages/color_observer_logger
 repository: https://github.com/jack-fan1991/flutter_color_observer_logger
 issue_tracker: https://github.com/jack-fan1991/flutter_color_observer_logger/issues
