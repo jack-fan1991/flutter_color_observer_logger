@@ -1,13 +1,13 @@
 ## Color logger 
 
-More examples you can get [here](https://github.com/Frezyx/talker/blob/master/packages/talker/example/talker_example.dart)
+More examples you can get [here](https://github.com/jack-fan1991/flutter_color_observer_logger/blob/main/example/lib/main.dart)
 
 * Setup Observer bloc
 ``` dart
   // show stack trace
   // if use 'flutter build apk --obfuscate  ' or Web trace will failed, 
   // set ColorObserverLogger.logStack = false ;
-  Bloc.observer = ColorBlocObserver(logStack: false);
+  Bloc.observer = ColorBlocObserver(stackTracking: true);
 
 ```
 
