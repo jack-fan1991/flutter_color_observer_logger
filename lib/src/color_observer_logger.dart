@@ -211,7 +211,7 @@ class LoggerHelperFormatter {
             "│ [${eventLog.title}]$verticalLine${eventLog.level.name}$verticalLine$line");
       }
     }
-    final result = [...buffer.reversed.toList(), ...msg];
+    final result = [...buffer.toList(), ...msg];
 
     return result;
   }

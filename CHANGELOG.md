@@ -1,6 +1,10 @@
+## 0.0.8
+
+- Update logger print sequence
+
 ## 0.0.7
 
-- update README.md
+- Update README.md
 
 ## 0.0.6
 

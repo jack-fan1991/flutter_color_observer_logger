@@ -11,9 +11,10 @@ class EventLog {
     this.stackTrace,
     this.title = '',
     DateTime? time,
+    this.level = Level.FINE,
   });
 
-  late Level level = Level.FINE;
+  final Level level;
 
   /// {@macro talker_data_message}
   final String message;
@@ -61,17 +62,16 @@ class CubitStateLog extends EventLog {
 
   static String _createMessage(
       BlocBase bloc, Change change, String callerLine) {
-    return 'STATE TYPE => ${change.currentState.runtimeType}${'$callerLine\nCURRENT state: ${change.currentState}'}\n\t  ⬇\n${'NEXT    state: ${change.nextState}'}';
+    return '${'$callerLine\nSTATE TYPE => ${change.currentState.runtimeType}\nCURRENT state: ${change.currentState}'}\n\t  ⬇\n${'NEXT    state: ${change.nextState}'}';
   }
 }
 
 class ErrorLog extends EventLog {
-  @override
-  late Level level = Level.SEVERE;
   ErrorLog(BlocBase bloc, StackTrace? stackTrace)
       : super(
           _createMessage(bloc, stackTrace),
           title: "BLOC ${bloc.runtimeType}",
+          level: Level.SEVERE,
         );
 
   static String _createMessage(BlocBase bloc, StackTrace? stackTrace) {
