@@ -1,4 +1,5 @@
 import 'package:color_observer_logger/src/ansi_color.dart';
+import 'package:color_observer_logger/src/bloc_hight_light_filter.dart';
 import 'package:color_observer_logger/src/color_observer_logger.dart';
 import 'package:color_observer_logger/src/event_log.dart';
 import 'package:bloc/bloc.dart';
@@ -74,6 +75,7 @@ class ColorBlocObserver extends BlocObserver
   ///   AnsiColor.showColor();
   ///   final Map<Level, AnsiColor> levelColors = {
   ///     Level.FINE: AnsiColor.fg(75),
+  ///     Level.WARNING: AnsiColor.fg(214),
   ///     Level.SEVERE: AnsiColor.fg(196),
   ///    };
   ///
@@ -89,11 +91,13 @@ class ColorBlocObserver extends BlocObserver
     Map<Level, AnsiColor>? levelColors,
     Map<Level, int>? methodCounts,
     Filter? filter,
+    BlocHightLightFilter? blocHightLightFilter,
   }) {
     ColorObserverLogger.stackTracking = stackTracking;
     ColorObserverLogger.updateLevelColors(levelColors);
     ColorObserverLogger.updateMethodCounts(methodCounts);
     ColorObserverLogger.filter = filter ?? Filter.allPass();
+    ColorObserverLogger.blocHightLightFilter = blocHightLightFilter;
   }
 
   @override

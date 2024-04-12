@@ -10,7 +10,7 @@ class AnsiColor {
   /// Reset all colors and options for current SGRs to terminal defaults.
   static const ansiDefault = '${ansiEsc}0m';
   static showColor({int start = 0, int end = 255}) {
-    // List.generate(80, (i) => print(AnsiColor.fg(i)("[$i]=>s")));
+    List.generate(80, (i) => print(AnsiColor.fg(i)("[$i]=>s")));
     for (var i = start; i < end; i++) {
       if (kIsWeb) {
         print(AnsiColor.fg(i)("[$i] => Test"));

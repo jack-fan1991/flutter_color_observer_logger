@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:color_observer_logger/color_observer_logger.dart';
+import 'package:color_observer_logger/src/bloc_hight_light_filter.dart';
 import 'package:color_observer_logger/src/event_log.dart';
 import 'package:flutter/foundation.dart';
 
@@ -20,6 +21,7 @@ class ColorObserverLogger {
   static bool _logStack = true;
   static bool get stackTracking => _logStack;
   static Filter filter = Filter.allPass();
+  static BlocHightLightFilter? blocHightLightFilter;
   static set stackTracking(bool value) {
     if (kIsWeb && value == true) {
       developer.log(AnsiColor.fg(196)(
@@ -31,6 +33,7 @@ class ColorObserverLogger {
 
   static final defaultLevelColors = {
     Level.FINE: AnsiColor.fg(40),
+    Level.WARNING: AnsiColor.fg(214),
     Level.SEVERE: AnsiColor.fg(196),
   };
 
@@ -70,8 +73,20 @@ class ColorObserverLogger {
     if (!canLog(eventLog)) return;
     // methodCount = methodCounts[level];
     AnsiColor color = defaultLevelColors[eventLog.level] ?? AnsiColor.none();
+
     if (eventLog.message.isEmpty) return;
     List<String> msg = loggerHelperFormatter.format(eventLog);
+    if (ColorObserverLogger.blocHightLightFilter?.filter(eventLog.message) ??
+        false) {
+      color = AnsiColor.fg(214);
+      for (var i = 0; i < msg.length; i++) {
+        final hightLight =
+            ColorObserverLogger.blocHightLightFilter?.filter(msg[i]) ?? false;
+        if (hightLight) {
+          msg[i] = "${msg[i]}    <==== ❗❗  ";
+        }
+      }
+    }
     if (eventLog.level >= Level.ALL) {
       msg = [head, ...msg, tail];
     }
@@ -110,7 +125,8 @@ class LoggerHelperFormatter {
     "LoggerHelperFormatter",
     "ColorLoggerFormatter",
     "package:logging",
-    "package:color_logger"
+    "package:color_logger",
+    "dart:ui",
   ];
 
   /// Matches a stacktrace line as generated on Android/iOS devices.

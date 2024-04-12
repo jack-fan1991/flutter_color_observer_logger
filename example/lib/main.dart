@@ -16,7 +16,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Logger.root.level = Level.ALL;
     Bloc.observer = ColorBlocObserver(
-      stackTracking: true,
+      stackTracking: false,
+      levelColors: {
+        Level.FINE: AnsiColor.fg(40),
+        Level.WARNING: AnsiColor.fg(214),
+        Level.SEVERE: AnsiColor.fg(196),
+      },
+      blocHightLightFilter: DefaultHighLightFilter(),
     );
     final testLoginBloc = TestLoginBloc();
     final testCubit = TestCubit(0);
