@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "1.18.0"
   color_observer_logger:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       path: ".."
       relative: true

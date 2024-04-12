@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:color_observer_logger/src/ansi_color.dart';
 import 'package:color_observer_logger/src/bloc_hight_light_filter.dart';
 import 'package:color_observer_logger/src/color_observer_logger.dart';
@@ -19,11 +21,12 @@ class BlocTrackingUtils {
 
   String trackCubit(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
-
+    if (ColorObserverLogger.kIsWeb) return trackWebCubit(bloc, event);
     final cubit = bloc.runtimeType.toString();
     final stack = StackTrace.current.toString().split('\n');
     String cubitMethodString = '';
     String refString = '';
+
     for (final s in stack) {
       if (s.contains(cubit)) {
         cubitMethodString = s;
@@ -42,9 +45,50 @@ class BlocTrackingUtils {
     return "$method   $ref";
   }
 
+  String trackWebCubit(BlocBase bloc, String event) {
+    if (ColorObserverLogger.stackTracking == false) return "";
+
+    final stack = StackTrace.current.toString().split('\n');
+    List<String> output = [];
+    for (final s in stack) {
+      if (s.contains('src/bloc_base.dart') && s.contains('emit')) {
+        int idx = stack.indexOf(s) + 1;
+        String cubitMethodString = stack[idx];
+        while (true) {
+          List<String> result = [];
+          String cache = '';
+          for (int i = 0; i < cubitMethodString.length; i++) {
+            final char = cubitMethodString[i];
+            if (char != ' ') {
+              cache += char;
+            } else {
+              if (cache != '') {
+                result.add(cache);
+              }
+              cache = '';
+            }
+          }
+          result.add(cache);
+          final file = "${result[0]}:${result[1]}";
+          final caller = result.last;
+          output.add("$caller()   ($file)");
+          idx++;
+          cubitMethodString = stack[idx];
+          if (cubitMethodString
+              .contains('dart-sdk/lib/_internal/js_dev_runtime')) {
+            break;
+          }
+        }
+      }
+    }
+
+    return output.join('\n');
+  }
+
   /// get event add ref position
   String trackBloc(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
+    if (ColorObserverLogger.kIsWeb) return trackWebBloc(bloc, event);
     final stack = StackTrace.current.toString().split('\n');
     final target = stack.indexOf(
             stack.firstWhere((element) => element.contains('Bloc.add ('))) +
@@ -54,6 +98,47 @@ class BlocTrackingUtils {
     if (ref == null) return '';
     return targetString.replaceAll(
         ref, '() => [${bloc.runtimeType}] add Event [$event]     $ref');
+  }
+
+  String trackWebBloc(BlocBase bloc, String event) {
+    if (ColorObserverLogger.stackTracking == false) return "";
+    final stack = StackTrace.current.toString().split('\n');
+    List<String> output = [];
+    for (final s in stack) {
+      if (s.contains('packages/bloc/src/bloc.dart') && s.contains('onEvent')) {
+        int idx = stack.indexOf(s) + 1;
+        String cubitMethodString = stack[idx];
+        while (true) {
+          List<String> result = [];
+          String cache = '';
+          for (int i = 0; i < cubitMethodString.length; i++) {
+            final char = cubitMethodString[i];
+            if (char != ' ') {
+              cache += char;
+            } else {
+              if (cache != '') {
+                result.add(cache);
+              }
+              cache = '';
+            }
+          }
+          result.add(cache);
+          final file = "${result[0]}:${result[1]}";
+          final caller = result.last;
+          output.add(
+              "[${bloc.runtimeType}] $caller () =>  add Event [$event]  ($file)");
+          idx++;
+          cubitMethodString = stack[idx];
+          if (cubitMethodString
+              .contains('dart-sdk/lib/_internal/js_dev_runtime')) {
+            break;
+          }
+        }
+      }
+    }
+    return output
+        .where((element) => !LoggerHelperFormatter.skipFileIfNeed(element))
+        .join('\n');
   }
 
   String getCallerLine(bool isCubit, BlocBase bloc, {String event = ""}) {
@@ -84,9 +169,19 @@ class ColorBlocObserver extends BlocObserver
   ///     Level.FINE: 2,
   ///    };
   ///
+  /// Bloc.observer = ColorBlocObserver(
+  ///   stackTracking: true,
+  ///   levelColors: {
+  ///     Level.FINE: AnsiColor.fg(40),
+  ///     Level.WARNING: AnsiColor.fg(214),
+  ///     Level.SEVERE: AnsiColor.fg(196),
+  ///   },
+  ///   blocHightLightFilter: DefaultHighLightFilter(),
+  /// );
   ///
   ///```
   ColorBlocObserver({
+    required bool kIsWeb,
     bool stackTracking = true,
     Map<Level, AnsiColor>? levelColors,
     Map<Level, int>? methodCounts,
@@ -98,6 +193,7 @@ class ColorBlocObserver extends BlocObserver
     ColorObserverLogger.updateMethodCounts(methodCounts);
     ColorObserverLogger.filter = filter ?? Filter.allPass();
     ColorObserverLogger.blocHightLightFilter = blocHightLightFilter;
+    ColorObserverLogger.kIsWeb = kIsWeb;
   }
 
   @override
@@ -135,8 +231,16 @@ class ColorBlocObserver extends BlocObserver
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    final stateLog =
-        ErrorLog(bloc, ColorObserverLogger.stackTracking ? stackTrace : null);
+    final callerLine = _blocTrackingUtils.getCallerLine(
+      bloc is Cubit,
+      bloc,
+      event: '',
+    );
+    final stateLog = ErrorLog(
+      bloc,
+      ColorObserverLogger.stackTracking ? stackTrace : null,
+      callerLine,
+    );
 
     ColorObserverLogger.output(stateLog);
 

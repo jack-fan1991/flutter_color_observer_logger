@@ -22,12 +22,13 @@ class ColorObserverLogger {
   static bool get stackTracking => _logStack;
   static Filter filter = Filter.allPass();
   static BlocHightLightFilter? blocHightLightFilter;
+  static bool kIsWeb = false;
   static set stackTracking(bool value) {
-    if (kIsWeb && value == true) {
-      developer.log(AnsiColor.fg(196)(
-          "ColorObserverLogger.logStack tracking is not supported on web platform"));
-      return;
-    }
+    // if (kIsWeb && value == true) {
+    //   developer.log(AnsiColor.fg(196)(
+    //       "ColorObserverLogger.logStack tracking is not supported on web platform"));
+    //   return;
+    // }
     _logStack = value;
   }
 
@@ -78,12 +79,14 @@ class ColorObserverLogger {
     List<String> msg = loggerHelperFormatter.format(eventLog);
     if (ColorObserverLogger.blocHightLightFilter?.filter(eventLog.message) ??
         false) {
-      color = AnsiColor.fg(214);
       for (var i = 0; i < msg.length; i++) {
+        final hightLightColor = AnsiColor.fg(214);
+
         final hightLight =
             ColorObserverLogger.blocHightLightFilter?.filter(msg[i]) ?? false;
         if (hightLight) {
-          msg[i] = "${msg[i]}    <==== ❗❗  ";
+          msg[i] = hightLightColor(
+              "${msg[i]}    <==== ❗Something contains HightLight❗  ");
         }
       }
     }
@@ -91,8 +94,6 @@ class ColorObserverLogger {
       msg = [head, ...msg, tail];
     }
     for (var s in msg) {
-      // print('  ${color(s)}');
-      //   // List.generate(80, (i) => print(AnsiColor.fg(i)("[$i]=>s")));
       if (kIsWeb) {
         print('  ${color(s)}');
       } else if (Platform.isIOS) {
@@ -127,6 +128,10 @@ class LoggerHelperFormatter {
     "package:logging",
     "package:color_logger",
     "dart:ui",
+    "dart-sdk/lib/_internal/js_dev_runtime",
+    "packages/color_observer_logger",
+    "packages/flutter/src",
+    "lib/_engine/engine/"
   ];
 
   /// Matches a stacktrace line as generated on Android/iOS devices.
@@ -238,7 +243,7 @@ class LoggerHelperFormatter {
     var count = 0;
     for (var line in lines) {
       if (_discardDeviceStacktraceLine(line) ||
-          skipFileIfNeed(line, skipFileName) ||
+          skipFileIfNeed(line) ||
           line.contains("<asynchronous suspension>") ||
           line == "") {
         continue;
@@ -268,8 +273,8 @@ class LoggerHelperFormatter {
     return match.group(2)!.startsWith('package:logger');
   }
 
-  bool skipFileIfNeed(String line, List<String> skipFiles) {
-    for (final skipFile in skipFiles) {
+  static bool skipFileIfNeed(String line) {
+    for (final skipFile in skipFileName) {
       if (line.contains(skipFile)) {
         return true;
       }

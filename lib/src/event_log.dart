@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:color_observer_logger/src/color_observer_logger.dart';
 import 'package:logging/logging.dart';
 
 /// Base implementation of [TalkerDataInterface]
@@ -67,9 +68,11 @@ class CubitStateLog extends EventLog {
 }
 
 class ErrorLog extends EventLog {
-  ErrorLog(BlocBase bloc, StackTrace? stackTrace)
+  ErrorLog(BlocBase bloc, StackTrace? stackTrace, String webTrace)
       : super(
-          _createMessage(bloc, stackTrace),
+          ColorObserverLogger.kIsWeb
+              ? webTrace
+              : _createMessage(bloc, stackTrace),
           title: "BLOC ${bloc.runtimeType}",
           level: Level.SEVERE,
         );
