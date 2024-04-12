@@ -22,12 +22,13 @@ class ColorObserverLogger {
   static bool get stackTracking => _logStack;
   static Filter filter = Filter.allPass();
   static BlocHightLightFilter? blocHightLightFilter;
+  static bool kIsWeb = false;
   static set stackTracking(bool value) {
-    if (kIsWeb && value == true) {
-      developer.log(AnsiColor.fg(196)(
-          "ColorObserverLogger.logStack tracking is not supported on web platform"));
-      return;
-    }
+    // if (kIsWeb && value == true) {
+    //   developer.log(AnsiColor.fg(196)(
+    //       "ColorObserverLogger.logStack tracking is not supported on web platform"));
+    //   return;
+    // }
     _logStack = value;
   }
 
@@ -127,6 +128,10 @@ class LoggerHelperFormatter {
     "package:logging",
     "package:color_logger",
     "dart:ui",
+    "dart-sdk/lib/_internal/js_dev_runtime",
+    "packages/color_observer_logger",
+    "packages/flutter/src",
+    "lib/_engine/engine/"
   ];
 
   /// Matches a stacktrace line as generated on Android/iOS devices.

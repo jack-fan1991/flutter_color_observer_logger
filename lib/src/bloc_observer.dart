@@ -19,11 +19,12 @@ class BlocTrackingUtils {
 
   String trackCubit(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
-
+    if (ColorObserverLogger.kIsWeb) return trackWebCubit(bloc, event);
     final cubit = bloc.runtimeType.toString();
     final stack = StackTrace.current.toString().split('\n');
     String cubitMethodString = '';
     String refString = '';
+
     for (final s in stack) {
       if (s.contains(cubit)) {
         cubitMethodString = s;
@@ -42,8 +43,65 @@ class BlocTrackingUtils {
     return "$method   $ref";
   }
 
+  String trackWebCubit(BlocBase bloc, String event) {
+    if (ColorObserverLogger.stackTracking == false) return "";
+
+    final cubit = bloc.runtimeType.toString();
+    final stack = StackTrace.current.toString().split('\n');
+    String cubitMethodString = '';
+    String refString = '';
+    bool isBlocBase = false;
+    for (final s in stack) {
+      if (s.contains('src/bloc_base.dart')) {
+        cubitMethodString = s;
+        isBlocBase = true;
+      }
+      if (!isBlocBase) {
+        continue;
+      }
+      if (cubitMethodString.contains('onChange') ||
+          cubitMethodString.contains('emit')) {
+        continue;
+      }
+    }
+    RegExp regExp = RegExp(r'(?:"(.*?)")|(\d+:\d+)');
+    List<String> result = [];
+    String cache = '';
+    int idx = 0;
+    for (int i = 0; i <= cubitMethodString.length; i++) {
+      final char = cubitMethodString[i];
+      print(char);
+      if (char != '') {
+        cache += char;
+      } else {
+        result.add(cache);
+        cache = '';
+      }
+    }
+    result.add(cache);
+    final ref = regExp.stringMatch(cubitMethodString);
+    // final ref = regex.stringMatch(refString);
+    final method = cubitMethodString.split('(').first;
+    if (ref == null) return '';
+    return "${result[1]}   $result[0]";
+  }
+
   /// get event add ref position
   String trackBloc(BlocBase bloc, String event) {
+    if (ColorObserverLogger.stackTracking == false) return "";
+    if (ColorObserverLogger.kIsWeb) return trackWebBloc(bloc, event);
+    final stack = StackTrace.current.toString().split('\n');
+    final target = stack.indexOf(
+            stack.firstWhere((element) => element.contains('Bloc.add ('))) +
+        1;
+    final targetString = stack[target];
+    final ref = regex.stringMatch(targetString);
+    if (ref == null) return '';
+    return targetString.replaceAll(
+        ref, '() => [${bloc.runtimeType}] add Event [$event]     $ref');
+  }
+
+  String trackWebBloc(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
     final stack = StackTrace.current.toString().split('\n');
     final target = stack.indexOf(
@@ -84,9 +142,19 @@ class ColorBlocObserver extends BlocObserver
   ///     Level.FINE: 2,
   ///    };
   ///
+  /// Bloc.observer = ColorBlocObserver(
+  ///   stackTracking: true,
+  ///   levelColors: {
+  ///     Level.FINE: AnsiColor.fg(40),
+  ///     Level.WARNING: AnsiColor.fg(214),
+  ///     Level.SEVERE: AnsiColor.fg(196),
+  ///   },
+  ///   blocHightLightFilter: DefaultHighLightFilter(),
+  /// );
   ///
   ///```
   ColorBlocObserver({
+    required bool kIsWeb,
     bool stackTracking = true,
     Map<Level, AnsiColor>? levelColors,
     Map<Level, int>? methodCounts,
@@ -98,6 +166,7 @@ class ColorBlocObserver extends BlocObserver
     ColorObserverLogger.updateMethodCounts(methodCounts);
     ColorObserverLogger.filter = filter ?? Filter.allPass();
     ColorObserverLogger.blocHightLightFilter = blocHightLightFilter;
+    ColorObserverLogger.kIsWeb = kIsWeb;
   }
 
   @override

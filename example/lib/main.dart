@@ -1,6 +1,7 @@
 import 'package:color_observer_logger/color_observer_logger.dart';
 import 'package:example/bloc/test_bloc.dart';
 import 'package:example/bloc/test_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Logger.root.level = Level.ALL;
     Bloc.observer = ColorBlocObserver(
-      stackTracking: false,
+      stackTracking: true,
+      kIsWeb: kIsWeb,
       levelColors: {
         Level.FINE: AnsiColor.fg(40),
         Level.WARNING: AnsiColor.fg(214),
