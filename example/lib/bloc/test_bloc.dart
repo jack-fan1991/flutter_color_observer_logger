@@ -12,7 +12,7 @@ class TestLoginBloc extends Bloc<BlocEvent, BlocState> {
   TestLoginBloc() : super(FailedState()) {
     on<Success>((event, emit) => emit(SuccessState()));
     on<Failed>((event, emit) => emit(FailedState()));
-    on<Error>((event, emit) => throw Exception("Error"));
+    on<Error>((event, emit) => emit(FailedState()));
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:color_observer_logger/src/ansi_color.dart';
 import 'package:color_observer_logger/src/bloc_hight_light_filter.dart';
 import 'package:color_observer_logger/src/color_observer_logger.dart';
@@ -46,44 +48,41 @@ class BlocTrackingUtils {
   String trackWebCubit(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
 
-    final cubit = bloc.runtimeType.toString();
     final stack = StackTrace.current.toString().split('\n');
-    String cubitMethodString = '';
-    String refString = '';
-    bool isBlocBase = false;
+    List<String> output = [];
     for (final s in stack) {
-      if (s.contains('src/bloc_base.dart')) {
-        cubitMethodString = s;
-        isBlocBase = true;
-      }
-      if (!isBlocBase) {
-        continue;
-      }
-      if (cubitMethodString.contains('onChange') ||
-          cubitMethodString.contains('emit')) {
-        continue;
+      if (s.contains('src/bloc_base.dart') && s.contains('emit')) {
+        int idx = stack.indexOf(s) + 1;
+        String cubitMethodString = stack[idx];
+        while (true) {
+          List<String> result = [];
+          String cache = '';
+          for (int i = 0; i < cubitMethodString.length; i++) {
+            final char = cubitMethodString[i];
+            if (char != ' ') {
+              cache += char;
+            } else {
+              if (cache != '') {
+                result.add(cache);
+              }
+              cache = '';
+            }
+          }
+          result.add(cache);
+          final file = "${result[0]}:${result[1]}";
+          final caller = result.last;
+          output.add("$caller()   ($file)");
+          idx++;
+          cubitMethodString = stack[idx];
+          if (cubitMethodString
+              .contains('dart-sdk/lib/_internal/js_dev_runtime')) {
+            break;
+          }
+        }
       }
     }
-    RegExp regExp = RegExp(r'(?:"(.*?)")|(\d+:\d+)');
-    List<String> result = [];
-    String cache = '';
-    int idx = 0;
-    for (int i = 0; i <= cubitMethodString.length; i++) {
-      final char = cubitMethodString[i];
-      print(char);
-      if (char != '') {
-        cache += char;
-      } else {
-        result.add(cache);
-        cache = '';
-      }
-    }
-    result.add(cache);
-    final ref = regExp.stringMatch(cubitMethodString);
-    // final ref = regex.stringMatch(refString);
-    final method = cubitMethodString.split('(').first;
-    if (ref == null) return '';
-    return "${result[1]}   $result[0]";
+
+    return output.join('\n');
   }
 
   /// get event add ref position
@@ -104,14 +103,42 @@ class BlocTrackingUtils {
   String trackWebBloc(BlocBase bloc, String event) {
     if (ColorObserverLogger.stackTracking == false) return "";
     final stack = StackTrace.current.toString().split('\n');
-    final target = stack.indexOf(
-            stack.firstWhere((element) => element.contains('Bloc.add ('))) +
-        1;
-    final targetString = stack[target];
-    final ref = regex.stringMatch(targetString);
-    if (ref == null) return '';
-    return targetString.replaceAll(
-        ref, '() => [${bloc.runtimeType}] add Event [$event]     $ref');
+    List<String> output = [];
+    for (final s in stack) {
+      if (s.contains('packages/bloc/src/bloc.dart') && s.contains('onEvent')) {
+        int idx = stack.indexOf(s) + 1;
+        String cubitMethodString = stack[idx];
+        while (true) {
+          List<String> result = [];
+          String cache = '';
+          for (int i = 0; i < cubitMethodString.length; i++) {
+            final char = cubitMethodString[i];
+            if (char != ' ') {
+              cache += char;
+            } else {
+              if (cache != '') {
+                result.add(cache);
+              }
+              cache = '';
+            }
+          }
+          result.add(cache);
+          final file = "${result[0]}:${result[1]}";
+          final caller = result.last;
+          output.add(
+              "[${bloc.runtimeType}] $caller () =>  add Event [$event]  ($file)");
+          idx++;
+          cubitMethodString = stack[idx];
+          if (cubitMethodString
+              .contains('dart-sdk/lib/_internal/js_dev_runtime')) {
+            break;
+          }
+        }
+      }
+    }
+    return output
+        .where((element) => !LoggerHelperFormatter.skipFileIfNeed(element))
+        .join('\n');
   }
 
   String getCallerLine(bool isCubit, BlocBase bloc, {String event = ""}) {
@@ -204,8 +231,16 @@ class ColorBlocObserver extends BlocObserver
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    final stateLog =
-        ErrorLog(bloc, ColorObserverLogger.stackTracking ? stackTrace : null);
+    final callerLine = _blocTrackingUtils.getCallerLine(
+      bloc is Cubit,
+      bloc,
+      event: '',
+    );
+    final stateLog = ErrorLog(
+      bloc,
+      ColorObserverLogger.stackTracking ? stackTrace : null,
+      callerLine,
+    );
 
     ColorObserverLogger.output(stateLog);
 

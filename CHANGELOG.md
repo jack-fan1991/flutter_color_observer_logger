@@ -1,3 +1,6 @@
+## 0.0.10
+- Add support web trace
+
 ## 0.0.9
 - Add BlocHightLightFilter design hight light message when something wrong 
 
