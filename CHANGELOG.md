@@ -1,3 +1,6 @@
+## 0.0.11
+- Update dependencies and improve logging functionality
+
 ## 0.0.10
 - Add support web trace
 

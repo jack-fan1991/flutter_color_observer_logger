@@ -82,7 +82,7 @@ class BlocTrackingUtils {
       }
     }
 
-    return output.join('\n');
+    return LoggerHelperFormatter.filterIfFile(output).join('\n');
   }
 
   /// get event add ref position
@@ -136,9 +136,7 @@ class BlocTrackingUtils {
         }
       }
     }
-    return output
-        .where((element) => !LoggerHelperFormatter.skipFileIfNeed(element))
-        .join('\n');
+    return LoggerHelperFormatter.filterIfFile(output).join('\n');
   }
 
   String getCallerLine(bool isCubit, BlocBase bloc, {String event = ""}) {

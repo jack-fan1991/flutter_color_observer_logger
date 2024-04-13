@@ -40,7 +40,7 @@ class ColorObserverLogger {
 
   static final Map<Level, int> defaultMethodCounts = {
     Level.SEVERE: 8,
-    Level.FINE: 1,
+    Level.FINE: 3,
   };
 
   static void updateMethodCounts(Map<Level, int>? methodCounts) {
@@ -70,13 +70,27 @@ class ColorObserverLogger {
     }
   }
 
+  static List<String> filterMsgCountByLevel(Level level, List<String> msg) {
+    final maxLine = defaultMethodCounts[level] ?? 1;
+    final dartFile = msg
+        .where((element) => element.contains('.dart'))
+        .take(maxLine)
+        .toList();
+    final blocInfo =
+        msg.where((element) => !element.contains('.dart')).toSet().toList();
+    return [...dartFile, ...blocInfo];
+  }
+
   static output(EventLog eventLog) {
     if (!canLog(eventLog)) return;
     // methodCount = methodCounts[level];
     AnsiColor color = defaultLevelColors[eventLog.level] ?? AnsiColor.none();
 
     if (eventLog.message.isEmpty) return;
-    List<String> msg = loggerHelperFormatter.format(eventLog);
+    List<String> msg =
+        LoggerHelperFormatter.formatWithPrefix(eventLog, eventLog.message);
+    msg = LoggerHelperFormatter.filterIfFile(msg);
+    msg = filterMsgCountByLevel(eventLog.level, msg);
     if (ColorObserverLogger.blocHightLightFilter?.filter(eventLog.message) ??
         false) {
       for (var i = 0; i < msg.length; i++) {
@@ -164,7 +178,7 @@ class LoggerHelperFormatter {
     _startTime = DateTime.now();
   }
 
-  String getTime() {
+  static String getTime() {
     String _threeDigits(int n) {
       if (n >= 100) return '$n';
       if (n >= 10) return '0$n';
@@ -200,23 +214,20 @@ class LoggerHelperFormatter {
       );
     }
 
-    String timeStr = getTime();
-
-    List<String> list = _formatAndPrint(
+    List<String> list = formatWithPrefix(
       eventLog,
-      timeStr,
       stackTraceStr,
     );
     return list;
   }
 
-  List<String> _formatAndPrint(
+  static List<String> formatWithPrefix(
     EventLog eventLog,
-    String time,
-    String? stacktrace,
+    String? msgList,
   ) {
     List<String> buffer = [];
     List<String> lines = [];
+    final time = getTime();
     buffer.add(
       '│ [${eventLog.title}]$verticalLine${eventLog.level.name}$verticalLine$time',
     );
@@ -225,8 +236,8 @@ class LoggerHelperFormatter {
               '│ [${eventLog.title}]$verticalLine${eventLog.level.name}$verticalLine$e',
         );
 
-    if (stacktrace != null) {
-      lines = stacktrace.split('\n');
+    if (msgList != null) {
+      lines = msgList.split('\n');
       for (var line in lines) {
         buffer.add(
             "│ [${eventLog.title}]$verticalLine${eventLog.level.name}$verticalLine$line");
@@ -280,5 +291,9 @@ class LoggerHelperFormatter {
       }
     }
     return false;
+  }
+
+  static List<String> filterIfFile(List<String> message) {
+    return message.where((msg) => !skipFileIfNeed(msg)).toList();
   }
 }
