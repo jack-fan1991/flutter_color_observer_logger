@@ -1,3 +1,7 @@
+## 0.0.13
+## 0.0.12
+- Update Readme
+
 ## 0.0.11
 - Update dependencies and improve logging functionality
 

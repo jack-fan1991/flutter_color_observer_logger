@@ -42,7 +42,7 @@ class BlocTrackingUtils {
     final ref = regex.stringMatch(refString);
     final method = cubitMethodString.split('(').first;
     if (ref == null) return '';
-    return "$method   $ref";
+    return "$method()   $ref";
   }
 
   String trackWebCubit(BlocBase bloc, String event) {
@@ -181,14 +181,22 @@ class ColorBlocObserver extends BlocObserver
   ColorBlocObserver({
     required bool kIsWeb,
     bool stackTracking = true,
-    Map<Level, AnsiColor>? levelColors,
-    Map<Level, int>? methodCounts,
+    AnsiColor? blocColor,
+    int? methodCount = 3,
     Filter? filter,
     BlocHightLightFilter? blocHightLightFilter,
   }) {
     ColorObserverLogger.stackTracking = stackTracking;
-    ColorObserverLogger.updateLevelColors(levelColors);
-    ColorObserverLogger.updateMethodCounts(methodCounts);
+    ColorObserverLogger.updateLevelColors(
+      {
+        Level.FINE: blocColor ?? AnsiColor.fg(40),
+      },
+    );
+    ColorObserverLogger.updateMethodCounts(
+      {
+        Level.FINE: methodCount ?? 3,
+      },
+    );
     ColorObserverLogger.filter = filter ?? Filter.allPass();
     ColorObserverLogger.blocHightLightFilter = blocHightLightFilter;
     ColorObserverLogger.kIsWeb = kIsWeb;

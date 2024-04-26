@@ -15,16 +15,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //AnsiColor.showColor();
     Logger.root.level = Level.ALL;
     Bloc.observer = ColorBlocObserver(
       stackTracking: true,
       kIsWeb: kIsWeb,
-      levelColors: {
-        Level.FINE: AnsiColor.fg(40),
-        Level.WARNING: AnsiColor.fg(214),
-        Level.SEVERE: AnsiColor.fg(196),
-      },
-      blocHightLightFilter: DefaultHighLightFilter(),
+      filter: ShowWhenFilter(
+        [
+          "TestLoginBloc",
+          "TestCubit",
+        ],
+      ),
+      blocColor: AnsiColor.fg(40),
+      methodCount: 3,
+      blocHightLightFilter: DefaultHighLightFilter(
+        color: AnsiColor.fg(214),
+        colorOnly: false,
+      ),
     );
     final testLoginBloc = TestLoginBloc();
     final testCubit = TestCubit(0);

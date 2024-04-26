@@ -58,7 +58,7 @@ class CubitStateLog extends EventLog {
   CubitStateLog(BlocBase bloc, Change change, String callerLine)
       : super(
           _createMessage(bloc, change, callerLine),
-          title: "BLOC ${bloc.runtimeType}",
+          title: "BLOC CUBIT ${bloc.runtimeType}",
         );
 
   static String _createMessage(

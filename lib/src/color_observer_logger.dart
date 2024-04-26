@@ -2,13 +2,10 @@ import 'dart:io';
 import 'package:color_observer_logger/color_observer_logger.dart';
 import 'package:color_observer_logger/src/bloc_hight_light_filter.dart';
 import 'package:color_observer_logger/src/event_log.dart';
-import 'package:flutter/foundation.dart';
 
 import 'dart:developer' as developer;
 
 import 'package:logging/logging.dart';
-
-import 'ansi_color.dart';
 
 final loggerHelperFormatter = LoggerHelperFormatter();
 
@@ -94,13 +91,16 @@ class ColorObserverLogger {
     if (ColorObserverLogger.blocHightLightFilter?.filter(eventLog.message) ??
         false) {
       for (var i = 0; i < msg.length; i++) {
-        final hightLightColor = AnsiColor.fg(214);
+        final hightLightColor =
+            blocHightLightFilter?.color ?? AnsiColor.fg(214);
 
         final hightLight =
             ColorObserverLogger.blocHightLightFilter?.filter(msg[i]) ?? false;
         if (hightLight) {
-          msg[i] = hightLightColor(
-              "${msg[i]}    <==== ❗Something contains HightLight❗  ");
+          final showWarning = blocHightLightFilter?.colorOnly ?? true;
+          final warning =
+              showWarning ? "" : "    <==== ❗Something contains HightLight❗  ";
+          msg[i] = hightLightColor("${msg[i]}$warning");
         }
       }
     }
@@ -158,8 +158,6 @@ class LoggerHelperFormatter {
     return stackInfo.replaceFirst(RegExp(r'^#\d+\s+'), '# ');
   }
 
-  late DateTime _startTime;
-
   final int methodCount;
   final int errorMethodCount;
   final bool colors;
@@ -174,9 +172,7 @@ class LoggerHelperFormatter {
     this.colors = true,
     this.printEmojis = true,
     this.printTime = true,
-  }) {
-    _startTime = DateTime.now();
-  }
+  });
 
   static String getTime() {
     String _threeDigits(int n) {
