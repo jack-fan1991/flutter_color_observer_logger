@@ -109,11 +109,11 @@ class ColorObserverLogger {
     }
     for (var s in msg) {
       if (kIsWeb) {
-        print('  ${color(s)}');
+        print(color(s));
       } else if (Platform.isIOS) {
-        developer.log('  ${color(s)}');
+        developer.log(color(s));
       } else {
-        print('  ${color(s)}');
+        print(color(s));
       }
     }
   }
