@@ -184,7 +184,7 @@ class ColorBlocObserver extends BlocObserver
     AnsiColor? blocColor,
     int? methodCount = 3,
     Filter? filter,
-    BlocHightLightFilter? blocHightLightFilter,
+    BlocHighLightFilter? blocHighLightFilter,
   }) {
     ColorObserverLogger.stackTracking = stackTracking;
     ColorObserverLogger.updateLevelColors(
@@ -198,7 +198,7 @@ class ColorBlocObserver extends BlocObserver
       },
     );
     ColorObserverLogger.filter = filter ?? Filter.allPass();
-    ColorObserverLogger.blocHightLightFilter = blocHightLightFilter;
+    ColorObserverLogger.blocHighLightFilter = blocHighLightFilter;
     ColorObserverLogger.kIsWeb = kIsWeb;
   }
 

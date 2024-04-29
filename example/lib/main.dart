@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       blocColor: AnsiColor.fg(40),
       methodCount: 3,
-      blocHightLightFilter: DefaultHighLightFilter(
+      blocHighLightFilter: DefaultHighLightFilter(
         color: AnsiColor.fg(214),
         colorOnly: false,
       ),

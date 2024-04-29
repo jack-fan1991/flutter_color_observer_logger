@@ -18,7 +18,7 @@ class ColorObserverLogger {
   static bool _logStack = true;
   static bool get stackTracking => _logStack;
   static Filter filter = Filter.allPass();
-  static BlocHightLightFilter? blocHightLightFilter;
+  static BlocHighLightFilter? blocHighLightFilter;
   static bool kIsWeb = false;
   static set stackTracking(bool value) {
     // if (kIsWeb && value == true) {
@@ -88,19 +88,18 @@ class ColorObserverLogger {
         LoggerHelperFormatter.formatWithPrefix(eventLog, eventLog.message);
     msg = LoggerHelperFormatter.filterIfFile(msg);
     msg = filterMsgCountByLevel(eventLog.level, msg);
-    if (ColorObserverLogger.blocHightLightFilter?.filter(eventLog.message) ??
+    if (ColorObserverLogger.blocHighLightFilter?.filter(eventLog.message) ??
         false) {
       for (var i = 0; i < msg.length; i++) {
-        final hightLightColor =
-            blocHightLightFilter?.color ?? AnsiColor.fg(214);
+        final highLightColor = blocHighLightFilter?.color ?? AnsiColor.fg(214);
 
-        final hightLight =
-            ColorObserverLogger.blocHightLightFilter?.filter(msg[i]) ?? false;
-        if (hightLight) {
-          final showWarning = blocHightLightFilter?.colorOnly ?? true;
+        final highLight =
+            ColorObserverLogger.blocHighLightFilter?.filter(msg[i]) ?? false;
+        if (highLight) {
+          final showWarning = blocHighLightFilter?.colorOnly ?? true;
           final warning =
-              showWarning ? "" : "    <==== ❗Something contains HightLight❗  ";
-          msg[i] = hightLightColor("${msg[i]}$warning");
+              showWarning ? "" : "    <==== ❗Something contains HighLight❗  ";
+          msg[i] = highLightColor("${msg[i]}$warning");
         }
       }
     }

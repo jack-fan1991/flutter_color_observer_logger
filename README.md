@@ -34,7 +34,7 @@ More examples you can get [here](https://github.com/jack-fan1991/flutter_color_o
       ),
       blocColor: AnsiColor.fg(40),
       methodCount: 3,
-      blocHightLightFilter: DefaultHighLightFilter(
+      blocHighLightFilter: DefaultHighLightFilter(
         color: AnsiColor.fg(214),
         colorOnly: false,
       ),
@@ -61,7 +61,7 @@ More examples you can get [here](https://github.com/jack-fan1991/flutter_color_o
 *  Highlight message with color when filter return true
 
 ```dart
-class DefaultHighLightFilter extends BlocHightLightFilter {
+class DefaultHighLightFilter extends BlocHighLightFilter {
   @override
   bool filter(String message) {
     return message.toLowerCase().contains('error') ||

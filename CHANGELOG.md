@@ -1,3 +1,6 @@
+## 0.0.15
+- Fix 'BlocHightLightFilter' to 'BlocHighLightFilter'
+
 ## 0.0.14
 - output  fmt
 
@@ -12,7 +15,7 @@
 - Add support web trace
 
 ## 0.0.9
-- Add BlocHightLightFilter design hight light message when something wrong 
+- Add BlocHighLightFilter design hight light message when something wrong 
 
 - Update logger print sequence
 ## 0.0.8
