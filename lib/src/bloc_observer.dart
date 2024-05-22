@@ -90,10 +90,19 @@ class BlocTrackingUtils {
     if (ColorObserverLogger.stackTracking == false) return "";
     if (ColorObserverLogger.kIsWeb) return trackWebBloc(bloc, event);
     final stack = StackTrace.current.toString().split('\n');
-    final target = stack.indexOf(
-            stack.firstWhere((element) => element.contains('Bloc.add ('))) +
-        1;
-    final targetString = stack[target];
+    String targetString = stack.firstWhere(
+        (element) => element.contains('Bloc.add ('),
+        orElse: () => "");
+    if (targetString.isEmpty) {
+      targetString = stack.firstWhere(
+          (element) => element.contains('.onError ('),
+          orElse: () => "");
+    }
+    if (targetString.isEmpty) {
+      return '';
+    }
+    final target = stack.indexOf(targetString) + 1;
+    targetString = stack[target];
     final ref = regex.stringMatch(targetString);
     if (ref == null) return '';
     return targetString.replaceAll(
