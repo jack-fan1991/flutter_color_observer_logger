@@ -108,14 +108,26 @@ class ColorObserverLogger {
     }
     for (var s in msg) {
       if (kIsWeb) {
-        print(color(s));
+        _logLongMessage(color(s));
       } else if (Platform.isIOS) {
-        developer.log(color(s));
+        _logLongMessageIos(color(s));
       } else {
-        print(color(s));
+        _logLongMessage(color(s));
       }
     }
   }
+}
+
+void _logLongMessageIos(String message) {
+  final pattern = RegExp('.{1,800}'); // 每次打印800字符
+  pattern
+      .allMatches(message)
+      .forEach((match) => developer.log(match.group(0) ?? ""));
+}
+
+void _logLongMessage(String message) {
+  final pattern = RegExp('.{1,800}'); // 每次打印800字符
+  pattern.allMatches(message).forEach((match) => print(match.group(0)));
 }
 
 class LoggerHelperFormatter {

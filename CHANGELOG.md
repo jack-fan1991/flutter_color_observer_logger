@@ -1,3 +1,6 @@
+## 0.0.17
+- BugFix: Correct long message printing on Android and iOS
+
 ## 0.0.15
 - Fix 'BlocHightLightFilter' to 'BlocHighLightFilter'
 
