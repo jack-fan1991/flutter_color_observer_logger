@@ -1,3 +1,6 @@
+## 0.0.18
+- BugFix: Update format
+
 ## 0.0.17
 - BugFix: Correct long message printing on Android and iOS
 

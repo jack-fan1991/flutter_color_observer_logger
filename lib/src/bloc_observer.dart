@@ -11,7 +11,7 @@ import 'package:logging/logging.dart';
 BlocTrackingUtils _blocTrackingUtils = BlocTrackingUtils();
 
 String cleanTrackInfo(String stackInfo) {
-  return stackInfo.replaceFirst(RegExp(r'^#\d+\s+'), '# ');
+  return stackInfo.replaceFirst(RegExp(r'^#\d+\s+'), '#0 ');
 }
 
 class BlocTrackingUtils {
